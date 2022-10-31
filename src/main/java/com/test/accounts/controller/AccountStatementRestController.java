@@ -6,7 +6,7 @@ import com.test.accounts.model.ERole;
 import com.test.accounts.model.request.SearchRequest;
 import com.test.accounts.service.AccountStatementService;
 import com.test.accounts.util.Constant;
-import com.test.accounts.util.Convert;
+import com.test.accounts.validation.Validation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/${version}/account")
@@ -37,44 +36,9 @@ public class AccountStatementRestController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public ResponseEntity<AccountStatementDTO> getAccountStatements(HttpServletRequest request,
                                               @RequestParam Map<String,String> searchParams) throws AccountStatementException {
-        validateRequest(request, searchParams);
+        Validation.validateRequest(searchParams, request.isUserInRole(ERole.ROLE_ADMIN.name()));
         var searchRequest = buildRequest(searchParams, request.isUserInRole(ERole.ROLE_USER.name()));
         return new ResponseEntity<>(accountStatementService.getAccountStatements(searchRequest), HttpStatus.OK);
-    }
-
-    private void validateRequest(HttpServletRequest request, Map<String,String> searchParams) throws AccountStatementException {
-        if(request.isUserInRole(ERole.ROLE_USER.name()) && searchParams.size() > 0) {
-            throw new AccountStatementException(AccountStatementException.UNAUTHORIZED, "Unauthorized access to perform this operation");
-        }
-        if(request.isUserInRole(ERole.ROLE_ADMIN.name()) && !searchParams.containsKey(Constant.ACCOUNT_NUMBER)) {
-            throw new AccountStatementException(AccountStatementException.INVALID_REQUEST_ERROR, "Account number is not present in search request");
-        }
-        if(request.isUserInRole(ERole.ROLE_ADMIN.name()) &&
-                (Objects.nonNull(searchParams.get(Constant.START_DATE)) && Objects.isNull(searchParams.get(Constant.END_DATE)))) {
-            throw new AccountStatementException(AccountStatementException.INVALID_REQUEST_ERROR, "End Date is not present");
-        }
-        if(request.isUserInRole(ERole.ROLE_ADMIN.name()) &&
-                (Objects.isNull(searchParams.get(Constant.START_DATE)) && Objects.nonNull(searchParams.get(Constant.END_DATE)))) {
-            throw new AccountStatementException(AccountStatementException.INVALID_REQUEST_ERROR, "Start Date is not present");
-        }
-        if(request.isUserInRole(ERole.ROLE_ADMIN.name()) &&
-                (Objects.isNull(searchParams.get(Constant.START_AMOUNT)) && Objects.nonNull(searchParams.get(Constant.END_AMOUNT)))) {
-            throw new AccountStatementException(AccountStatementException.INVALID_REQUEST_ERROR, "End Amount is not present");
-        }
-        if(request.isUserInRole(ERole.ROLE_ADMIN.name()) &&
-                (Objects.isNull(searchParams.get(Constant.START_AMOUNT)) && Objects.nonNull(searchParams.get(Constant.END_AMOUNT)))) {
-            throw new AccountStatementException(AccountStatementException.INVALID_REQUEST_ERROR, "Start Amount is not present");
-        }
-        if(request.isUserInRole(ERole.ROLE_ADMIN.name()) &&
-                Objects.nonNull(searchParams.get(Constant.START_DATE)) &&
-                !Convert.validationDate(searchParams.get(Constant.START_DATE))) {
-            throw new AccountStatementException(AccountStatementException.INVALID_REQUEST_ERROR, "Start date format should be 'dd.MM.yyyy'");
-        }
-        if(request.isUserInRole(ERole.ROLE_ADMIN.name()) &&
-                Objects.nonNull(searchParams.get(Constant.END_DATE)) &&
-                !Convert.validationDate(searchParams.get(Constant.END_DATE))) {
-            throw new AccountStatementException(AccountStatementException.INVALID_REQUEST_ERROR, "End date format should be 'dd.MM.yyyy'");
-        }
     }
 
     private SearchRequest buildRequest(Map<String,String> searchParams, boolean isUser) {
