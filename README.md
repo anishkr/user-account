@@ -30,6 +30,6 @@ password: use![]r
   `
 - JWT token will expire every 5 mins
 
-  ![Sonarqube ](../../../Desktop/Sonaqube.png)
+  ![Sonarqube ](https://github.com/anishkr/user-account/blob/main/sonarqube-images/Sonaqube.png)
 
 
