@@ -29,7 +29,7 @@ public class AccountStatementServiceImpl implements AccountStatementService {
 
     @Override
     public AccountStatementDTO getAccountStatements(SearchRequest searchRequest) throws AccountStatementException {
-        Optional<List<Account>> accounts = accountRepository.findAccountByAccountNumber(searchRequest.getAccountNumber());
+        var accounts = accountRepository.findAccountByAccountNumber(searchRequest.getAccountNumber());
 
         if(accounts.isEmpty()) {
             throw new AccountStatementException(AccountStatementException.NOT_FOUND,

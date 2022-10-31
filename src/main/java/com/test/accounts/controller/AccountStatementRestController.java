@@ -6,6 +6,7 @@ import com.test.accounts.model.ERole;
 import com.test.accounts.model.request.SearchRequest;
 import com.test.accounts.service.AccountStatementService;
 import com.test.accounts.util.Constant;
+import com.test.accounts.util.Convert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,7 +38,7 @@ public class AccountStatementRestController {
     public ResponseEntity<AccountStatementDTO> getAccountStatements(HttpServletRequest request,
                                               @RequestParam Map<String,String> searchParams) throws AccountStatementException {
         validateRequest(request, searchParams);
-        SearchRequest searchRequest = buildRequest(searchParams, request.isUserInRole(ERole.ROLE_USER.name()));
+        var searchRequest = buildRequest(searchParams, request.isUserInRole(ERole.ROLE_USER.name()));
         return new ResponseEntity<>(accountStatementService.getAccountStatements(searchRequest), HttpStatus.OK);
     }
 
@@ -63,6 +64,16 @@ public class AccountStatementRestController {
         if(request.isUserInRole(ERole.ROLE_ADMIN.name()) &&
                 (Objects.isNull(searchParams.get(Constant.START_AMOUNT)) && Objects.nonNull(searchParams.get(Constant.END_AMOUNT)))) {
             throw new AccountStatementException(AccountStatementException.INVALID_REQUEST_ERROR, "Start Amount is not present");
+        }
+        if(request.isUserInRole(ERole.ROLE_ADMIN.name()) &&
+                Objects.nonNull(searchParams.get(Constant.START_DATE)) &&
+                !Convert.validationDate(searchParams.get(Constant.START_DATE))) {
+            throw new AccountStatementException(AccountStatementException.INVALID_REQUEST_ERROR, "Start date format should be 'dd.MM.yyyy'");
+        }
+        if(request.isUserInRole(ERole.ROLE_ADMIN.name()) &&
+                Objects.nonNull(searchParams.get(Constant.END_DATE)) &&
+                !Convert.validationDate(searchParams.get(Constant.END_DATE))) {
+            throw new AccountStatementException(AccountStatementException.INVALID_REQUEST_ERROR, "End date format should be 'dd.MM.yyyy'");
         }
     }
 

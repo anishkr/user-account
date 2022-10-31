@@ -10,20 +10,17 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class AccountStatementExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     protected ResponseEntity<ErrorResponse> handleMethodArgumentNotValid(HttpServletRequest req, MethodArgumentNotValidException ex) {
-
-        List<String> errors = ex.getBindingResult()
+        var errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
-
 
         return new ResponseEntity<>(new ErrorResponse(AccountStatementException.INVALID_REQUEST_ERROR, errors), HttpStatus.BAD_REQUEST);
     }
@@ -43,7 +40,7 @@ public class AccountStatementExceptionHandler {
 
         }
 
-        String exceptionName = ex.getExceptionName();
+        var exceptionName = ex.getExceptionName();
 
         if (AccountStatementException.REST_CALL_EXCEPTION.equals(exceptionName)) {
 

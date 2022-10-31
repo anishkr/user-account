@@ -1,5 +1,6 @@
 package com.test.accounts.util;
 
+import com.test.accounts.exception.AccountStatementException;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +33,16 @@ public class Convert {
             log.error("[Convert][getSHA256Hash] converting string to hashed error : {}" ,ex.getMessage());
         }
         return result;
+    }
+
+    public static boolean validationDate(String fromDate) throws AccountStatementException {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            LocalDate.parse(fromDate, formatter);
+            return true;
+        }catch (Exception e) {
+            return false;
+        }
     }
 
     private static String  bytesToHex(byte[] hash) {
