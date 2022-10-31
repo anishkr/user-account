@@ -9,6 +9,7 @@ public class Constant {
     public static final String  START_AMOUNT = "startAmount";
     public static final  String  END_AMOUNT = "endAmount";
     public static final String  ACCOUNT_NUMBER = "accountNumber";
+    public static final String  DATE_FORMAT = "dd.MM.yyyy";
 
     //SQL QURIES
     public static final String FIND_ACCOUNT_BY_ACCOUNT_NUMBER = "SELECT id, account_type, account_number FROM account where account_number = %s";

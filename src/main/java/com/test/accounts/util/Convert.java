@@ -15,12 +15,12 @@ import java.time.format.DateTimeFormatter;
 public class Convert {
 
     public static LocalDate stringToDate(String fromDate)  {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Constant.DATE_FORMAT);
         return LocalDate.parse(fromDate, formatter);
     }
 
     public static String dateToString(LocalDate localDate) {
-        return localDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        return localDate.format(DateTimeFormatter.ofPattern(Constant.DATE_FORMAT));
     }
 
     public static String getSHA256Hash(String data) {
@@ -35,9 +35,9 @@ public class Convert {
         return result;
     }
 
-    public static boolean validationDate(String fromDate) throws AccountStatementException {
+    public static boolean validationDate(String fromDate) {
         try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern(Constant.DATE_FORMAT);
             LocalDate.parse(fromDate, formatter);
             return true;
         }catch (Exception e) {
