@@ -17,6 +17,7 @@ H2 DB used for spring security and MS Access for getting account data and perfor
 
 ## Steps to execute
 - Clone the project from git
+- Change the `spring.second-datasource.jdbc-url` from application.properties.Example `jdbc:ucanaccess:<MS ACESS DB File Path>;openExclusive=false;ignoreCase=true`
 - Build the project from project location `./gradlew build`
 - Run the application and application will start with 8080 port
 - Two default users will insert in h2db, 
